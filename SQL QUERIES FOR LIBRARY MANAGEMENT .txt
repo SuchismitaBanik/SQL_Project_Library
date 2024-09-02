@@ -1,0 +1,72 @@
+SQL QUERIES FOR LIBRARY MANAGEMENT SYSTEM:
+
+1.INSERT INTO Books (Title, Author, Genre, PublicationDate, ISBN, Availability) 
+VALUES ('To Kill a Mockingbird', 'Harper Lee', 'Fiction', '1960-07-11', '9780060935467', TRUE);
+
+2.SET SQL_SAFE_UPDATES = 0;
+UPDATE Books 
+SET Availability = FALSE 
+WHERE ISBN = '9780060935467';
+
+3.DELETE FROM Publishers 
+WHERE Name = 'Macmillan';
+SELECT * FROM Publishers;
+
+4.UPDATE Reservations 
+SET Status = 'Cancelled' 
+WHERE ReservationID = 1;
+SELECT * FROM Reservations;
+
+5.INSERT INTO Reservations (BorrowerID, BookID, ReservationDate, Status) 
+VALUES (2, 3, '2024-09-05', 'Active');
+
+6.SELECT * 
+FROM Books 
+WHERE Availability = TRUE;
+
+7.SELECT b.Title, b.Author 
+FROM Books b
+JOIN Transactions t ON b.BookID = t.BookID
+WHERE t.BorrowerID = 1;
+
+8.SELECT b.Title, COUNT(t.TransactionID) AS BorrowCount 
+FROM Books b
+JOIN Transactions t ON b.BookID = t.BookID
+GROUP BY b.Title
+ORDER BY BorrowCount DESC;
+
+9.SELECT b.Title, bor.Name, t.DueDate 
+FROM Books b
+JOIN Transactions t ON b.BookID = t.BookID
+JOIN Borrowers bor ON t.BorrowerID = bor.BorrowerID
+WHERE t.ReturnDate IS NULL AND t.DueDate < CURDATE();
+
+10.SELECT r.ReservationID, bor.Name, r.ReservationDate, r.Status 
+FROM Reservations r
+JOIN Borrowers bor ON r.BorrowerID = bor.BorrowerID
+WHERE r.BookID = 3;
+
+11.SELECT bor.Name, COUNT(t.TransactionID) AS TotalBorrowed 
+FROM Borrowers bor
+JOIN Transactions t ON bor.BorrowerID = t.BorrowerID
+GROUP BY bor.Name;
+
+12.SELECT bor.Name, SUM(f.Amount) AS TotalFines 
+FROM Borrowers bor
+JOIN Fines f ON bor.BorrowerID = f.BorrowerID
+GROUP BY bor.Name;
+
+13.SELECT b.Title, COUNT(bc.CategoryID) AS CategoryCount 
+FROM Books b
+JOIN Book_Categories bc ON b.BookID = bc.BookID
+GROUP BY b.Title
+HAVING CategoryCount >=1;
+
+14.SELECT * 
+FROM Transactions 
+WHERE LoanDate BETWEEN '2024-01-01' AND '2024-12-31';
+
+15.SELECT bor.Name 
+FROM Borrowers bor
+LEFT JOIN Transactions t ON bor.BorrowerID = t.BorrowerID
+WHERE t.TransactionID IS NULL;
